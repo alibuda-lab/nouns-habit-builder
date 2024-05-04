@@ -1,10 +1,11 @@
 'use client';
 
-import { challenges } from '@/constants';
-import useUserChallenges, { Challenge } from '@/hooks/useUserChallenges';
+import { Challenge } from '@/hooks/useUserChallenges';
 import Image from 'next/image';
-import { SetStateAction } from 'react';
-import { useAccount, useConnect } from 'wagmi';
+import { SetStateAction, useEffect } from 'react';
+import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import trackerContract from '@/contracts/tracker.json';
+import toast from 'react-hot-toast';
 
 const img = require('../../../src/imgs/success.png') as string;
 
@@ -15,6 +16,35 @@ export default function Step4Claim({
   challenge: Challenge;
   setSteps: React.Dispatch<SetStateAction<number>>;
 }) {
+  const {
+    writeContract,
+    data: dataHash,
+    error: joinError,
+    isPending: joinPending,
+  } = useWriteContract();
+
+  const { isLoading, isSuccess } = useWaitForTransactionReceipt({
+    hash: dataHash,
+  });
+
+  const onClaimClick = async () => {
+    writeContract({
+      address: trackerContract.address as `0x${string}`,
+      abi: trackerContract.abi,
+      functionName: 'withdraw',
+      args: [],
+    });
+  };
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success('Successfully Claimed!');
+      // setTimeout(() => {
+      //   setSteps(1);
+      // }, 2000);
+    }
+  }, [isSuccess, setSteps]);
+
   return (
     <div className="flex flex-col items-center justify-center">
       {/* Img and Description */}
@@ -28,7 +58,7 @@ export default function Step4Claim({
       <button
         type="button"
         className="bg-yellow mt-4 rounded-lg px-6 py-3 font-bold text-white hover:bg-yellow-600"
-        onClick={() => console.log('claim')}
+        onClick={onClaimClick}
       >
         Claim Rewards
       </button>
