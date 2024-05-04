@@ -34,9 +34,8 @@ export default function Step2DepositAndStake({
   const overlayInstanceSDK = useRef<GateFiSDK | null>(null);
   const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedChallengeName = event.target.value;
-    const challenge = challenges.find((c) => c.name === selectedChallengeName);
+  const handleOnChoose = (challengeArx: string) => {
+    const challenge = challenges.find((c) => c.arxAddress === challengeArx);
     if (challenge) {
       setSelectedChallenge(challenge);
     }
@@ -147,7 +146,7 @@ export default function Step2DepositAndStake({
       {/* drop down here */}
       <div>
         {/* ... existing JSX ... */}
-        <select
+        {/* <select
           style={{ borderColor: '#7E7956', border: 'solid', width: '250px', height: '45px' }}
           value={selectedChallenge.name ?? ''}
           onChange={handleOnChange}
@@ -158,12 +157,13 @@ export default function Step2DepositAndStake({
               {challenge.name}
             </option>
           ))}
-        </select>
+        </select> */}
 
-        {/* <ChallengesDropDown
+        <ChallengesDropDown
           selectedChallenge={selectedChallenge}
           setSelectedChallenge={setSelectedChallenge}
-        /> */}
+          onChoose={handleOnChoose}
+        />
       </div>
 
       <button
@@ -201,14 +201,6 @@ export default function Step2DepositAndStake({
       <div className="w-full justify-start">
         <Image src={kangaroo} width="350" alt="Kangaroo" className="mb-3 object-cover" />
       </div>
-
-      <button
-        type="button"
-        className="bg-yellow mt-4 rounded-lg px-6 py-3 font-bold text-white"
-        onClick={() => setSteps(3)}
-      >
-        Next
-      </button>
     </div>
   );
 }
